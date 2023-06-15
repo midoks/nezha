@@ -4,11 +4,12 @@ import (
 	"context"
 	"log"
 
-	"github.com/naiba/nezha/cmd/dashboard/controller"
-	"github.com/naiba/nezha/cmd/dashboard/rpc"
-	"github.com/naiba/nezha/model"
-	"github.com/naiba/nezha/service/singleton"
 	"github.com/ory/graceful"
+
+	"github.com/midoks/nezha/cmd/dashboard/controller"
+	"github.com/midoks/nezha/cmd/dashboard/rpc"
+	"github.com/midoks/nezha/model"
+	"github.com/midoks/nezha/service/singleton"
 )
 
 func init() {
