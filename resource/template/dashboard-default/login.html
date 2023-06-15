@@ -1,0 +1,25 @@
+{{define "dashboard-default/login"}}
+{{template "common/header" .}}
+<div class="login nb-container">
+    <div class="ui center aligned grid">
+        <div class="column">
+            <h2 class="ui image header">
+                <img src="static/logo.svg?v20210804" class="image">
+            </h2>
+
+            <!-- <div class="ui left icon input"> -->
+                <input type="username" value="" placeholder="用户名">
+                <i class="users icon"></i>
+            <!-- </div> -->
+
+            <!-- <div class="ui left icon input"> -->
+                <input type="password" value="" placeholder="密码">
+                <i class="users icon"></i>
+            <!-- </div> -->
+
+            <a href="/oauth2/login" class="ui fluid large nezha-primary-btn submit button">{{tr "Login"}}</a>
+        </div>
+    </div>
+</div>
+{{template "common/footer" .}}
+{{end}}
