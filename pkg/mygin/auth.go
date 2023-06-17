@@ -24,6 +24,7 @@ type AuthorizeOption struct {
 
 func Authorize(opt AuthorizeOption) func(*gin.Context) {
 	return func(c *gin.Context) {
+
 		var code = http.StatusForbidden
 		if opt.Guest {
 			code = http.StatusBadRequest
@@ -40,6 +41,7 @@ func Authorize(opt AuthorizeOption) func(*gin.Context) {
 
 		// 用户鉴权
 		token, _ := c.Cookie(singleton.Conf.Site.CookieName)
+		fmt.Println("token:" + token)
 		token = strings.TrimSpace(token)
 		if token != "" {
 			var u model.User
@@ -69,7 +71,6 @@ func Authorize(opt AuthorizeOption) func(*gin.Context) {
 			}
 		}
 
-		fmt.Println(commonErr)
 		// 已登录且只能游客访问
 		if isLogin && opt.Guest {
 			ShowErrorPage(c, commonErr, opt.IsPage)

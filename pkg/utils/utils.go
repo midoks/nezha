@@ -1,7 +1,9 @@
 package utils
 
 import (
+	"crypto/md5"
 	"crypto/rand"
+	"fmt"
 	"math/big"
 	"os"
 	"regexp"
@@ -75,4 +77,14 @@ func GenerateRandomString(n int) (string, error) {
 		ret[i] = letters[num.Int64()]
 	}
 	return string(ret), nil
+}
+
+func Md5Byte(buf []byte) string {
+	hash := md5.New()
+	hash.Write(buf)
+	return fmt.Sprintf("%x", hash.Sum(nil))
+}
+
+func Md5(s string) string {
+	return Md5Byte([]byte(s))
 }

@@ -19,8 +19,9 @@ type ErrInfo struct {
 }
 
 func ShowErrorPage(c *gin.Context, i ErrInfo, isPage bool) {
+	fmt.Println("dashboard-aa/error:" + singleton.Conf.Site.DashboardTheme)
 	if isPage {
-		fmt.Println("dashboard-" + singleton.Conf.Site.DashboardTheme + "/error")
+
 		c.HTML(i.Code, "dashboard-"+singleton.Conf.Site.DashboardTheme+"/error", CommonEnvironment(c, gin.H{
 			"Code":  i.Code,
 			"Title": i.Title,

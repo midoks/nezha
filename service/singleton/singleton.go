@@ -1,6 +1,7 @@
 package singleton
 
 import (
+	// "fmt"
 	"log"
 	"time"
 
@@ -65,6 +66,18 @@ func InitDBFromPath(path string) {
 		model.MonitorHistory{}, model.Cron{}, model.Transfer{}, model.ApiToken{})
 	if err != nil {
 		panic(err)
+	}
+
+	// 初始化管理员名字
+	var user model.User
+	if err := DB.Where("id = ?", 1).Take(&user).Error; err != nil {
+		username, _ := utils.GenerateRandomString(8)
+		password, _ := utils.GenerateRandomString(10)
+
+		var admin model.User
+		admin = model.NewUserFromUP(username, password)
+		admin.SuperAdmin = true
+		DB.Save(&admin)
 	}
 }
 

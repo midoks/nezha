@@ -1,0 +1,27 @@
+title: nezha
+frequency: 3
+dirfilter:
+- tmp
+- .git
+- .github
+- scripts
+- vendor
+- logs
+- .github
+ext:
+- go
+- js
+- tmpl
+- ini
+- html
+enablerun: true
+action:
+  before:
+  - find . -name ".DS_Store" -print -delete
+  - go mod tidy && go mod vendor
+  after:
+  - ps -ef|grep 'nezha'| grep -v grep | grep -v git | awk '{print $2}' | xargs kill -9 
+  - ./nezha web &
+  - echo "start web"
+  exit:
+  - ps -ef|grep 'nezha'| grep -v grep | grep -v git | awk '{print $2}' | xargs kill -9 

@@ -3,6 +3,8 @@ package controller
 import (
 	"net/http"
 
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 
@@ -17,19 +19,31 @@ type memberPage struct {
 
 func (mp *memberPage) serve() {
 	mr := mp.r.Group("")
+
+	store := cookie.NewStore([]byte("secret"))
+	mr.Use(sessions.Sessions("nezha", store))
+
 	mr.Use(mygin.Authorize(mygin.AuthorizeOption{
-		Member:   true,
-		IsPage:   true,
-		Msg:      singleton.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "YouAreNotAuthorized"}),
-		Btn:      singleton.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "Login"}),
-		Redirect: "/login",
+		Member: true,
+		IsPage: true,
+		Msg:    singleton.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "YouAreNotAuthorized"}),
+		Btn:    singleton.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "Login"}),
+		// Redirect: "/login",
 	}))
+	mr.POST("/login", mp.login)
 	mr.GET("/server", mp.server)
 	mr.GET("/monitor", mp.monitor)
 	mr.GET("/cron", mp.cron)
 	mr.GET("/notification", mp.notification)
 	mr.GET("/setting", mp.setting)
 	mr.GET("/api", mp.api)
+}
+
+func (mp *memberPage) login(c *gin.Context) {
+	c.HTML(http.StatusOK, "dashboard-"+singleton.Conf.Site.DashboardTheme+"/login", mygin.CommonEnvironment(c, gin.H{
+		"title":  singleton.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "ApiManagement"}),
+		"Tokens": singleton.ApiTokenList,
+	}))
 }
 
 func (mp *memberPage) api(c *gin.Context) {
