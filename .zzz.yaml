@@ -18,7 +18,7 @@ enablerun: true
 action:
   before:
   - find . -path vendor -prune -name ".DS_Store" -print -delete
-  - go mod tidy && go mod vendor
+  - #go mod tidy && go mod vendor
   after:
   - ps -ef|grep 'nezha'| grep -v grep | grep -v git | awk '{print $2}' | xargs kill -9 
   - ./nezha web &
