@@ -1,9 +1,11 @@
 package controller
 
 import (
-	"fmt"
+	// "fmt"
 	"net/http"
 
+	"github.com/gin-contrib/sessions"
+	// "github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 
@@ -14,6 +16,11 @@ import (
 
 type guestPage struct {
 	r *gin.Engine
+}
+
+type gLoginForm struct {
+	Username string
+	Password string
 }
 
 func (gp *guestPage) serve() {
@@ -27,32 +34,38 @@ func (gp *guestPage) serve() {
 	}))
 
 	gr.GET("/login", gp.login)
+	gr.POST("/login", gp.postLogin)
 
-	oauth := &oauth2controller{
-		r: gr,
+}
+
+func (gp *guestPage) postLogin(c *gin.Context) {
+
+	username := c.PostForm("username")
+	password := c.PostForm("password")
+
+	args := mygin.CommonEnvironment(c, gin.H{
+		"title": singleton.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "Login"}),
+	})
+
+	var u model.User
+	if err := singleton.DB.Where("login = ?", username).First(&u).Error; err == nil {
+		if password == u.Password {
+			sess := sessions.Default(c)
+			sess.Set("uid", u.ID)
+			sess.Save()
+			c.Redirect(http.StatusMovedPermanently, "/server")
+			return
+		}
+		args["LoginErrorMessage"] = "密码错误!"
+	} else {
+		args["LoginErrorMessage"] = "用户或密码错误!"
 	}
-	oauth.serve()
+
+	c.HTML(http.StatusOK, "dashboard-"+singleton.Conf.Site.DashboardTheme+"/login", args)
 }
 
 func (gp *guestPage) login(c *gin.Context) {
-	LoginType := "GitHub"
-	RegistrationLink := "https://github.com/join"
-	if singleton.Conf.Oauth2.Type == model.ConfigTypeGitee {
-		LoginType = "Gitee"
-		RegistrationLink = "https://gitee.com/signup"
-	} else if singleton.Conf.Oauth2.Type == model.ConfigTypeGitlab {
-		LoginType = "Gitlab"
-		RegistrationLink = "https://gitlab.com/users/sign_up"
-	} else if singleton.Conf.Oauth2.Type == model.ConfigTypeJihulab {
-		LoginType = "Jihulab"
-		RegistrationLink = "https://jihulab.com/users/sign_up"
-	} else if singleton.Conf.Oauth2.Type == model.ConfigTypeGitea {
-		LoginType = "Gitea"
-		RegistrationLink = fmt.Sprintf("%s/user/sign_up", singleton.Conf.Oauth2.Endpoint)
-	}
 	c.HTML(http.StatusOK, "dashboard-"+singleton.Conf.Site.DashboardTheme+"/login", mygin.CommonEnvironment(c, gin.H{
-		"Title":            singleton.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "Login"}),
-		"LoginType":        LoginType,
-		"RegistrationLink": RegistrationLink,
+		"Title": singleton.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "Login"}),
 	}))
 }

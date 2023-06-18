@@ -1,12 +1,14 @@
 package mygin
 
 import (
-	"fmt"
+	// "fmt"
 	"net/http"
-	"strings"
-	"time"
+	// "strings"
+	// "time"
 
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+	// "github.com/gin-contrib/sessions/cookie"
 
 	"github.com/midoks/nezha/model"
 	"github.com/midoks/nezha/service/singleton"
@@ -40,13 +42,15 @@ func Authorize(opt AuthorizeOption) func(*gin.Context) {
 		var isLogin bool
 
 		// 用户鉴权
-		token, _ := c.Cookie(singleton.Conf.Site.CookieName)
-		fmt.Println("token:" + token)
-		token = strings.TrimSpace(token)
-		if token != "" {
+		// token, _ := c.Cookie(singleton.Conf.Site.CookieName)
+		sess := sessions.Default(c)
+		uid := sess.Get("uid")
+		// fmt.Println("uid:", uid)
+		// sess_uid := strings.TrimSpace(uid)
+		if uid != nil {
 			var u model.User
-			if err := singleton.DB.Where("token = ?", token).First(&u).Error; err == nil {
-				isLogin = u.TokenExpired.After(time.Now())
+			if err := singleton.DB.Where("id = ?", uid).First(&u).Error; err == nil {
+				isLogin = true
 			}
 			if isLogin {
 				c.Set(model.CtxKeyAuthorizedUser, &u)

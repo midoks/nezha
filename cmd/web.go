@@ -20,7 +20,7 @@ var Web = cli.Command{
 	Action:      runWebService,
 }
 
-func init() {
+func initWeb() {
 	// 初始化 dao 包
 	singleton.InitConfigFromPath("data/config.yaml")
 	singleton.InitTimezoneAndCache()
@@ -45,6 +45,7 @@ func initSystem() {
 }
 
 func runWebService(c *cli.Context) error {
+	initWeb()
 	singleton.CleanMonitorHistory()
 	go rpc.ServeRPC(singleton.Conf.GRPCPort)
 	serviceSentinelDispatchBus := make(chan model.Monitor) // 用于传递服务监控任务信息的channel

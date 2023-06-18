@@ -14,6 +14,7 @@ import (
 	"github.com/hashicorp/go-uuid"
 	"github.com/jinzhu/copier"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
+
 	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/sync/singleflight"
 
@@ -42,6 +43,7 @@ type commonPage struct {
 
 func (cp *commonPage) serve() {
 	cr := cp.r.Group("")
+
 	cr.Use(mygin.Authorize(mygin.AuthorizeOption{}))
 	cr.GET("/terminal/:id", cp.terminal)
 	cr.POST("/view-password", cp.issueViewPassword)

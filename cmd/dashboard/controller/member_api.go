@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/copier"
 
@@ -810,6 +811,10 @@ func (ma *memberAPI) logout(c *gin.Context) {
 		})
 		return
 	}
+
+	sess := sessions.Default(c)
+	sess.Delete("uid")
+	sess.Save()
 	singleton.DB.Model(admin).UpdateColumns(model.User{
 		Token:        "",
 		TokenExpired: time.Now(),

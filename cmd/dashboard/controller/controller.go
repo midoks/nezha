@@ -11,8 +11,11 @@ import (
 
 	"code.cloudfoundry.org/bytefmt"
 	"github.com/gin-contrib/pprof"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
+	// "github.com/utrack/gin-csrf"
 
 	"github.com/midoks/nezha/pkg/mygin"
 	"github.com/midoks/nezha/service/singleton"
@@ -26,6 +29,18 @@ func ServeWeb(port uint) *http.Server {
 		pprof.Register(r)
 	}
 	r.Use(mygin.RecordPath)
+
+	store := cookie.NewStore([]byte("secret"))
+	r.Use(sessions.Sessions("nezha", store))
+
+	// r.Use(csrf.Middleware(csrf.Options{
+	// 	Secret: "nezha",
+	// 	ErrorFunc: func(c *gin.Context) {
+	// 		c.String(400, "CSRF token mismatch")
+	// 		c.Abort()
+	// 	},
+	// }))
+
 	r.SetFuncMap(funcMap)
 	r.Static("/static", "resource/static")
 	r.LoadHTMLGlob("resource/template/**/*.html")
