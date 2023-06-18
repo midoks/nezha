@@ -1,7 +1,6 @@
 package mygin
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -19,9 +18,7 @@ type ErrInfo struct {
 }
 
 func ShowErrorPage(c *gin.Context, i ErrInfo, isPage bool) {
-	fmt.Println("dashboard-aa/error:" + singleton.Conf.Site.DashboardTheme)
 	if isPage {
-
 		c.HTML(i.Code, "dashboard-"+singleton.Conf.Site.DashboardTheme+"/error", CommonEnvironment(c, gin.H{
 			"Code":  i.Code,
 			"Title": i.Title,

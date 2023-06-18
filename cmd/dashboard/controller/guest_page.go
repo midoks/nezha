@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/gin-contrib/sessions"
-	// "github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/csrf"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 
 	"github.com/midoks/nezha/model"
@@ -65,7 +65,9 @@ func (gp *guestPage) postLogin(c *gin.Context) {
 }
 
 func (gp *guestPage) login(c *gin.Context) {
+
 	c.HTML(http.StatusOK, "dashboard-"+singleton.Conf.Site.DashboardTheme+"/login", mygin.CommonEnvironment(c, gin.H{
-		"Title": singleton.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "Login"}),
+		"Title":          singleton.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "Login"}),
+		csrf.TemplateTag: csrf.TemplateField(c.Request),
 	}))
 }

@@ -14,12 +14,34 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/csrf"
+	adapter "github.com/gwatts/gin-adapter"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
-	// "github.com/utrack/gin-csrf"
 
 	"github.com/midoks/nezha/pkg/mygin"
 	"github.com/midoks/nezha/service/singleton"
 )
+
+var csrfMd func(http.Handler) http.Handler
+
+func CSRF() gin.HandlerFunc {
+	csrfMd = csrf.Protect(
+		[]byte("32-byte-long-auth-key"),
+		csrf.Secure(false),
+		csrf.HttpOnly(true),
+		csrf.ErrorHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusForbidden)
+			w.Write([]byte(`{"message": "Forbidden - CSRF token invalid"}`))
+		})),
+	)
+	return adapter.Wrap(csrfMd)
+}
+
+func CSRFToken() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Header("X-CSRF-Token", csrf.Token(c.Request))
+	}
+}
 
 func ServeWeb(port uint) *http.Server {
 	gin.SetMode(gin.ReleaseMode)
@@ -30,16 +52,24 @@ func ServeWeb(port uint) *http.Server {
 	}
 	r.Use(mygin.RecordPath)
 
-	store := cookie.NewStore([]byte("secret"))
-	r.Use(sessions.Sessions("nezha", store))
+	store := cookie.NewStore([]byte("nezha"))
+	store.Options(sessions.Options{
+		MaxAge: 24 * 60 * 60,
+		Path:   "/",
+	})
+	r.Use(sessions.Sessions(singleton.Conf.Site.CookieName, store))
 
-	// r.Use(csrf.Middleware(csrf.Options{
-	// 	Secret: "nezha",
-	// 	ErrorFunc: func(c *gin.Context) {
-	// 		c.String(400, "CSRF token mismatch")
-	// 		c.Abort()
-	// 	},
-	// }))
+	// r.Use(CSRF())
+	// r.Use(CSRFToken())
+
+	// commonErr := ErrInfo{
+	// 	Title: "访问受限",
+	// 	Code:  code,
+	// 	Msg:   opt.Msg,
+	// 	Link:  opt.Redirect,
+	// 	Btn:   opt.Btn,
+	// }
+	// ShowErrorPage(c, commonErr, true)
 
 	r.SetFuncMap(funcMap)
 	r.Static("/static", "resource/static")
