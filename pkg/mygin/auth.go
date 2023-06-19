@@ -1,10 +1,7 @@
 package mygin
 
 import (
-	"fmt"
 	"net/http"
-	// "strings"
-	// "time"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -43,11 +40,9 @@ func Authorize(opt AuthorizeOption) func(*gin.Context) {
 		// 用户鉴权
 		sess := sessions.Default(c)
 		uid := sess.Get("uid")
-		fmt.Println(uid)
 		if uid != nil {
 			var u model.User
 			if err := singleton.DB.Where("id = ?", uid).First(&u).Error; err == nil {
-				fmt.Println(u)
 				isLogin = true
 			}
 			if isLogin {
