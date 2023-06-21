@@ -74,6 +74,8 @@ func InitDBFromPath(path string) {
 		username, _ := utils.GenerateRandomString(8)
 		password, _ := utils.GenerateRandomString(10)
 
+		password = utils.Md5(password)
+
 		var admin model.User
 		admin = model.NewUserFromUP(username, password)
 		admin.SuperAdmin = true

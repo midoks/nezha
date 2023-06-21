@@ -1,16 +1,17 @@
 package controller
 
 import (
-	// "fmt"
 	"net/http"
+	"strings"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"github.com/gorilla/csrf"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 
 	"github.com/midoks/nezha/model"
+	"github.com/midoks/nezha/pkg/csrf"
 	"github.com/midoks/nezha/pkg/mygin"
+	"github.com/midoks/nezha/pkg/utils"
 	"github.com/midoks/nezha/service/singleton"
 )
 
@@ -39,6 +40,7 @@ func (gp *guestPage) serve() {
 }
 
 func (gp *guestPage) postLogin(c *gin.Context) {
+	csrf.VaildToken(c)
 
 	username := c.PostForm("username")
 	password := c.PostForm("password")
@@ -47,27 +49,32 @@ func (gp *guestPage) postLogin(c *gin.Context) {
 		"title": singleton.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "Login"}),
 	})
 
-	var u model.User
-	if err := singleton.DB.Where("login = ?", username).First(&u).Error; err == nil {
-		if password == u.Password {
-			sess := sessions.Default(c)
-			sess.Set("uid", u.ID)
-			sess.Save()
-			c.Redirect(http.StatusMovedPermanently, "/server")
-			return
-		}
-		args["LoginErrorMessage"] = "密码错误!"
+	if strings.EqualFold(username, "") || strings.EqualFold(password, "") {
+		args["LoginErrorMessage"] = "用户或密码不能为空!"
 	} else {
-		args["LoginErrorMessage"] = "用户或密码错误!"
+		var u model.User
+		if err := singleton.DB.Where("login = ?", username).First(&u).Error; err == nil {
+			if utils.Md5(password) == u.Password {
+				sess := sessions.Default(c)
+				sess.Set("uid", u.ID)
+				sess.Save()
+				c.Redirect(http.StatusMovedPermanently, "/server")
+				return
+			}
+			args["LoginErrorMessage"] = "密码错误!"
+		} else {
+			args["LoginErrorMessage"] = "用户或密码错误!"
+		}
 	}
 
 	c.HTML(http.StatusOK, "dashboard-"+singleton.Conf.Site.DashboardTheme+"/login", args)
 }
 
 func (gp *guestPage) login(c *gin.Context) {
+	args := mygin.CommonEnvironment(c, gin.H{
+		"Title": singleton.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "Login"}),
+	})
 
-	c.HTML(http.StatusOK, "dashboard-"+singleton.Conf.Site.DashboardTheme+"/login", mygin.CommonEnvironment(c, gin.H{
-		"Title":          singleton.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "Login"}),
-		csrf.TemplateTag: csrf.TemplateField(c.Request),
-	}))
+	args["Token"] = csrf.GetToken(c)
+	c.HTML(http.StatusOK, "dashboard-"+singleton.Conf.Site.DashboardTheme+"/login", args)
 }

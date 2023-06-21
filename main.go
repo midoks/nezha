@@ -16,6 +16,7 @@ func main() {
 	app.Usage = "Self-hostable, lightweight, servers and websites monitoring and O&M tool."
 	app.Commands = []cli.Command{
 		cmd.Web,
+		cmd.Conf,
 	}
 
 	if err := app.Run(os.Args); err != nil {

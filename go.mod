@@ -5,12 +5,11 @@ go 1.20
 require (
 	code.cloudfoundry.org/bytefmt v0.0.0-20230612151507-41ef4d1f67a4
 	github.com/BurntSushi/toml v1.3.2
+	github.com/dchest/uniuri v1.2.0
 	github.com/gin-contrib/pprof v1.4.0
 	github.com/gin-contrib/sessions v0.0.5
 	github.com/gin-gonic/gin v1.9.1
-	github.com/gorilla/csrf v1.7.1
 	github.com/gorilla/websocket v1.5.0
-	github.com/gwatts/gin-adapter v1.0.0
 	github.com/hashicorp/go-uuid v1.0.3
 	github.com/jinzhu/copier v0.3.5
 	github.com/json-iterator/go v1.1.12
