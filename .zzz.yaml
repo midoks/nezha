@@ -22,6 +22,7 @@ action:
   after:
   - ps -ef|grep 'nezha'| grep -v grep | grep -v git | awk '{print $2}' | xargs kill -9 
   - ./nezha web &
+  - ./nezha conf -u ""
   - echo "start web"
   exit:
   - ps -ef|grep 'nezha'| grep -v grep | grep -v git | awk '{print $2}' | xargs kill -9
