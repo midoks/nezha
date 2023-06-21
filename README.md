@@ -33,8 +33,3 @@
 - Español
 
 You can change the dashboard language in the settings page (`/setting`) after the dashboard is installed.
-
-
-## Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=midoks/nezha&type=Timeline)](https://star-history.com/#midoks/nezha&Timeline)
