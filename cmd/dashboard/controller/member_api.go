@@ -895,7 +895,6 @@ func (ma *memberAPI) updateSetting(c *gin.Context) {
 	singleton.Conf.Site.DashboardTheme = sf.DashboardTheme
 	singleton.Conf.Site.CustomCode = sf.CustomCode
 	singleton.Conf.Site.ViewPassword = sf.ViewPassword
-	singleton.Conf.Oauth2.Admin = sf.Admin
 	// 保证NotificationTag不为空
 	if singleton.Conf.IPChangeNotificationTag == "" {
 		singleton.Conf.IPChangeNotificationTag = "default"

@@ -84,13 +84,6 @@ type Config struct {
 		CustomCode     string
 		ViewPassword   string // 前台查看密码
 	}
-	Oauth2 struct {
-		Type         string
-		Admin        string // 管理员用户名列表
-		ClientID     string
-		ClientSecret string
-		Endpoint     string
-	}
 	HTTPPort      uint
 	GRPCPort      uint
 	GRPCHost      string
