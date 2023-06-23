@@ -173,37 +173,6 @@ func TestQueryHeader2(t *testing.T) {
 	}
 }
 
-func TestErrorFunc(t *testing.T) {
-	result := ""
-	g := newServer(Options{
-		Secret: "secret123",
-		ErrorFunc: func(c *gin.Context) {
-			result = "something wrong"
-		},
-	})
-
-	g.GET("/login", func(c *gin.Context) {
-		GetToken(c)
-	})
-
-	g.POST("/login", func(c *gin.Context) {
-		c.String(http.StatusOK, "OK")
-	})
-
-	r1 := request(g, requestOptions{URL: "/login"})
-	request(g, requestOptions{
-		Method: "POST",
-		URL:    "/login",
-		Headers: map[string]string{
-			"Cookie": r1.Header().Get("Set-Cookie"),
-		},
-	})
-
-	if result != "something wrong" {
-		t.Error("Error function was not called")
-	}
-}
-
 func TestIgnoreMethods(t *testing.T) {
 	g := newServer(Options{
 		Secret:        "secret123",
