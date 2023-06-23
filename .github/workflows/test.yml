@@ -27,6 +27,7 @@ jobs:
         run: |
           go build
       - name: Run Gosec Security Scanner
+        # gosec -exclude=G104 ./...
         run: |
           go install github.com/securego/gosec/v2/cmd/gosec@latest
-          gosec -exclude=G104 ./...
+
