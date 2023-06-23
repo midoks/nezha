@@ -2,24 +2,24 @@ before:
   hooks:
     - go mod tidy -v
 builds:
-  - id: universal
+  - id: nezha
     env:
       - CGO_ENABLED=0
     ldflags:
       - -s -w -X main.version={{.Version}} -X main.arch={{.Arch}}
     goos:
       - linux
-      - windows
-      - freebsd
+      # - windows
+      # - freebsd
     goarch:
-      - arm
-      - arm64
-      - 386
+      # - arm
+      # - arm64
+      # - 386
       - amd64
-      - mips
-      - mipsle
-      - s390x
-      - riscv64
+      # - mips
+      # - mipsle
+      # - s390x
+      # - riscv64
     gomips:
       - softfloat
     ignore:
