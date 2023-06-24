@@ -1,7 +1,7 @@
 before:
   hooks:
     - go mod tidy -v
-    - [[ -d data ]]  && rm -rf data/sqlite.db
+    - rm -rf data/sqlite.db
 builds:
   # - id: nezha
   #   env:
