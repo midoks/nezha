@@ -201,6 +201,7 @@ install_dashboard() {
     chmod 777 -R $NZ_DASHBOARD_PATH
     
     echo -e "正在安装面板"
+    echo "wget -t 2 -T 10 -O nezha_linux_${os_arch}.zip https://${GITHUB_URL}/midoks/nezha/releases/download/${version}/nezha_linux_${os_arch}.zip "
     wget -t 2 -T 10 -O nezha_linux_${os_arch}.zip https://${GITHUB_URL}/midoks/nezha/releases/download/${version}/nezha_linux_${os_arch}.zip >/dev/null 2>&1
     if [[ $? != 0 ]]; then
         echo -e "${red}Release 下载失败，请检查本机能否连接 ${GITHUB_URL}${plain}"
