@@ -2,6 +2,9 @@
 
 goreleaser release --skip-publish --rm-dist --snapshot
 
+# publish
+# goreleaser release --clean
+
 if [ -f dist/nezha-darwin-amd64.zip ];then
 	cd dist
 	mkdir -p tmp
