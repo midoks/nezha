@@ -7,27 +7,53 @@ before:
 builds:
   - id: nezha
     env:
-      - CGO_ENABLED=0
+      - CGO_ENABLED=1
+      - CC=x86_64-linux-musl-gcc
     ldflags:
       - -s -w -X main.version={{.Version}} -X main.arch={{.Arch}}
     goos:
       - linux
-      # - windows
-      # - freebsd
     goarch:
-      # - arm
-      # - arm64
-      # - 386
       - amd64
-      # - mips
-      # - mipsle
-      # - s390x
-      # - riscv64
-    ignore:
-      - goos: windows
-        goarch: arm
-      - goos: windows
-        goarch: arm64
+    main: .
+    binary: nezha
+
+  - id: nezha-386
+    env:
+      - CGO_ENABLED=1
+      - CC=i486-linux-musl-gcc
+    ldflags:
+      - -s -w -X main.version={{.Version}} -X main.arch={{.Arch}}
+    goos:
+      - linux
+    goarch:
+      - 386
+    main: .
+    binary: nezha
+
+  - id: nezha-arm64
+    env:
+      - CGO_ENABLED=1
+      - CC=aarch64-linux-musl-gcc
+    ldflags:
+      - -s -w -X main.version={{.Version}} -X main.arch={{.Arch}}
+    goos:
+      - linux
+    goarch:
+      - arm64
+    main: .
+    binary: nezha
+
+  - id: nezha-arm
+    env:
+      - CGO_ENABLED=1
+      - CC=arm-linux-musleabi-gcc
+    ldflags:
+      - -s -w -X main.version={{.Version}} -X main.arch={{.Arch}}
+    goos:
+      - linux
+    goarch:
+      - arm
     main: .
     binary: nezha
 
