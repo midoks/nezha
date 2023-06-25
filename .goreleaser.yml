@@ -1,58 +1,42 @@
 before:
   hooks:
     - go mod tidy -v
+    - rm -rf data/sqlite.db
 builds:
-  - id: universal
-    env:
-      - CGO_ENABLED=0
-    ldflags:
-      - -s -w -X main.version={{.Version}} -X main.arch={{.Arch}}
-    goos:
-      - linux
-      - windows
-      - freebsd
-    goarch:
-      - arm
-      - arm64
-      - 386
-      - amd64
-      - mips
-      - mipsle
-      - s390x
-      - riscv64
-    gomips:
-      - softfloat
-    ignore:
-      - goos: windows
-        goarch: arm
-      - goos: windows
-        goarch: arm64
-    main: .
-    binary: nezha-agent
+  # - id: nezha
+  #   env:
+  #     - CGO_ENABLED=0
+  #   ldflags:
+  #     - -s -w -X main.version={{.Version}} -X main.arch={{.Arch}}
+  #   goos:
+  #     - linux
+  #     # - windows
+  #     # - freebsd
+  #   goarch:
+  #     - arm
+  #     - arm64
+  #     - 386
+  #     - amd64
+  #     - mips
+  #     - mipsle
+  #     - s390x
+  #     - riscv64
+  #   ignore:
+  #     - goos: windows
+  #       goarch: arm
+  #     - goos: windows
+  #       goarch: arm64
+  #   main: .
+  #   binary: nezha
   - id: darwin-amd64
     env:
       - CGO_ENABLED=1
-      - CC=o64-clang
-      - CXX=o64-clang++
     ldflags:
       - -s -w -X main.version={{.Version}} -X main.arch={{.Arch}}
     goos:
       - darwin
     goarch:
       - amd64
-    main: .
-    binary: nezha
-  - id: darwin-arm64
-    env:
-      - CGO_ENABLED=1
-      - CC=oa64-clang
-      - CXX=oa64-clang++
-    ldflags:
-      - -s -w -X main.version={{.Version}} -X main.arch={{.Arch}}
-    goos:
-      - darwin
-    goarch:
-      - arm64
     main: .
     binary: nezha
 universal_binaries:
@@ -63,10 +47,12 @@ checksum:
 snapshot:
   name_template: "nezha"
 archives:
-  - name_template: "nezha-{{ .Os }}_{{ .Arch }}"
+  - name_template: "nezha-{{ .Os }}-{{ .Arch }}"
     format: zip
     files:
-      - none*
+      - resource
+      - data
+
 changelog:
   sort: asc
   filters:
