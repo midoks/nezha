@@ -32,4 +32,13 @@
 - 中文
 - Español
 
+## Install
+
+```
+curl -L https://cdn.jsdelivr.net/gh/midoks/nezha@latest/script/install.sh -o nezha.sh && chmod +x nezha.sh && sudo CN=true ./nezha.sh
+
+curl -L https://raw.githubusercontent.com/midoks/nezha/main/script/install.sh -o nezha.sh && chmod +x nezha.sh && sudo CN=true ./nezha.sh
+
+```
+
 You can change the dashboard language in the settings page (`/setting`) after the dashboard is installed.

@@ -2,7 +2,7 @@
 
 #========================================================
 #   System Required: CentOS 7+ / Debian 8+ / Ubuntu 16+ / Alpine 3+ /
-#     Arch 仅测试了一次，如有问题带截图反馈 dysf888@pm.me
+#   Arch 仅测试了一次，如有问题带截图反馈 dysf888@pm.me
 #   Description: 哪吒监控安装脚本
 #   Github: https://github.com/naiba/nezha
 #========================================================
@@ -124,6 +124,7 @@ install_base() {
     (command -v git >/dev/null 2>&1 && command -v curl >/dev/null 2>&1 && command -v wget >/dev/null 2>&1 && command -v unzip >/dev/null 2>&1 && command -v getenforce >/dev/null 2>&1) ||
     (install_soft curl wget git unzip)
 }
+
 install_arch(){
     echo -e "${green}提示: ${plain} Arch安装libselinux需添加nezha-agent用户，安装完会自动删除，建议手动检查一次\n"
     read -e -r -p "是否安装libselinux? [Y/n] " input
@@ -158,6 +159,21 @@ install_soft() {
 
 install_dashboard() {
     install_base
+
+    local version=$(curl -m 10 -sL "https://api.github.com/repos/midoks/nezha/releases/latest" | grep "tag_name" | head -n 1 | awk -F ":" '{print $2}' | sed 's/\"//g;s/,//g;s/ //g')
+    if [ ! -n "$version" ]; then
+        version=$(curl -m 10 -sL "https://fastly.jsdelivr.net/gh/midoks/nezha/" | grep "option\.value" | awk -F "'" '{print $2}' | sed 's/midoks\/nezha@/v/g')
+    fi
+    if [ ! -n "$version" ]; then
+        version=$(curl -m 10 -sL "https://gcore.jsdelivr.net/gh/midoks/nezha/" | grep "option\.value" | awk -F "'" '{print $2}' | sed 's/midoks\/nezha@/v/g')
+    fi
+    
+    if [ ! -n "$version" ]; then
+        echo -e "获取版本号失败，请检查本机能否链接 https://api.github.com/repos/midoks/nezha/releases/latest"
+        return 0
+    else
+        echo -e "当前最新版本为: ${version}"
+    fi
     
     echo -e "> 安装面板"
     
@@ -184,18 +200,16 @@ install_dashboard() {
     
     chmod 777 -R $NZ_DASHBOARD_PATH
     
-    command -v docker >/dev/null 2>&1
+    echo -e "正在安装面板"
+    wget -t 2 -T 10 -O nezha_linux_${os_arch}.zip https://${GITHUB_URL}/midoks/nezha/releases/download/${version}/nezha_linux_${os_arch}.zip >/dev/null 2>&1
     if [[ $? != 0 ]]; then
-        echo -e "正在安装 Docker"
-        bash <(curl -sL https://${Get_Docker_URL}) ${Get_Docker_Argu} >/dev/null 2>&1
-        if [[ $? != 0 ]]; then
-            echo -e "${red}下载脚本失败，请检查本机能否连接 ${Get_Docker_URL}${plain}"
-            return 0
-        fi
-        systemctl enable docker.service
-        systemctl start docker.service
-        echo -e "${green}Docker${plain} 安装成功"
+        echo -e "${red}Release 下载失败，请检查本机能否连接 ${GITHUB_URL}${plain}"
+        return 0
     fi
+
+    unzip -qo nezha_linux_${os_arch}.zip &&
+    mv nezha_linux_${os_arch} $NZ_AGENT_PATH &&
+    rm -rf nezha_linux_${os_arch}.zip
     
     modify_dashboard_config 0
     
@@ -342,12 +356,6 @@ modify_dashboard_config() {
         return 0
     fi
     
-    echo "关于 GitHub Oauth2 应用：在 https://github.com/settings/developers 创建，无需审核，Callback 填 http(s)://域名或IP/oauth2/callback" &&
-    echo "关于 Gitee Oauth2 应用：在 https://gitee.com/oauth/applications 创建，无需审核，Callback 填 http(s)://域名或IP/oauth2/callback" &&
-    read -ep "请输入 OAuth2 提供商(github/gitlab/jihulab/gitee，默认 github): " nz_oauth2_type &&
-    read -ep "请输入 Oauth2 应用的 Client ID: " nz_github_oauth_client_id &&
-    read -ep "请输入 Oauth2 应用的 Client Secret: " nz_github_oauth_client_secret &&
-    read -ep "请输入 GitHub/Gitee 登录名作为管理员，多个以逗号隔开: " nz_admin_logins &&
     read -ep "请输入站点标题: " nz_site_title &&
     read -ep "请输入站点访问端口: (默认 8008)" nz_site_port &&
     read -ep "请输入用于 Agent 接入的 RPC 端口: (默认 5555)" nz_grpc_port
@@ -368,12 +376,6 @@ modify_dashboard_config() {
         nz_oauth2_type=github
     fi
     
-    sed -i "s/nz_oauth2_type/${nz_oauth2_type}/" /tmp/nezha-config.yaml
-    sed -i "s/nz_admin_logins/${nz_admin_logins}/" /tmp/nezha-config.yaml
-    sed -i "s/nz_grpc_port/${nz_grpc_port}/" /tmp/nezha-config.yaml
-    sed -i "s/nz_github_oauth_client_id/${nz_github_oauth_client_id}/" /tmp/nezha-config.yaml
-    sed -i "s/nz_github_oauth_client_secret/${nz_github_oauth_client_secret}/" /tmp/nezha-config.yaml
-    sed -i "s/nz_language/zh-CN/" /tmp/nezha-config.yaml
     sed -i "s/nz_site_title/${nz_site_title}/" /tmp/nezha-config.yaml
     sed -i "s/nz_site_port/${nz_site_port}/" /tmp/nezha-docker-compose.yaml
     sed -i "s/nz_grpc_port/${nz_grpc_port}/g" /tmp/nezha-docker-compose.yaml
@@ -443,13 +445,6 @@ start_dashboard() {
 
 stop_dashboard() {
     echo -e "> 停止面板"
-    
-    docker compose version
-    if [[ $? == 0 ]]; then
-        cd $NZ_DASHBOARD_PATH && docker compose down
-    else
-        cd $NZ_DASHBOARD_PATH && docker-compose down
-    fi
     
     if [[ $? == 0 ]]; then
         echo -e "${green}哪吒监控 停止成功${plain}"
