@@ -12,7 +12,7 @@ jobs:
       image: goreleaser/goreleaser-cross:v1.20
     steps:
       - run: |
-          git config --global --add safe.directory /__w/agent/agent
+          git config --global --add safe.directory /__w/nezha/nezha
       - uses: actions/checkout@master
         with:
           fetch-depth: 0
