@@ -201,16 +201,16 @@ install_dashboard() {
     chmod 777 -R $NZ_DASHBOARD_PATH
     
     echo -e "正在安装面板"
-    echo "wget -t 2 -T 10 -O nezha_linux_${os_arch}.zip https://${GITHUB_URL}/midoks/nezha/releases/download/${version}/nezha_linux_${os_arch}.zip "
-    wget -t 2 -T 10 -O nezha_linux_${os_arch}.zip https://${GITHUB_URL}/midoks/nezha/releases/download/${version}/nezha_linux_${os_arch}.zip >/dev/null 2>&1
+    echo "wget -t 2 -T 10 -O nezha-linux-${os_arch}.zip https://${GITHUB_URL}/midoks/nezha/releases/download/${version}/nezha-linux-${os_arch}.zip"
+    wget -t 2 -T 10 -O nezha-linux-${os_arch}.zip https://${GITHUB_URL}/midoks/nezha/releases/download/${version}/nezha-linux-${os_arch}.zip >/dev/null 2>&1
     if [[ $? != 0 ]]; then
         echo -e "${red}Release 下载失败，请检查本机能否连接 ${GITHUB_URL}${plain}"
         return 0
     fi
 
-    unzip -qo nezha_linux_${os_arch}.zip &&
-    mv nezha_linux_${os_arch} $NZ_AGENT_PATH &&
-    rm -rf nezha_linux_${os_arch}.zip
+    unzip -qo nezha-linux-${os_arch}.zip &&
+    mv nezha-linux-${os_arch} $NZ_AGENT_PATH &&
+    rm -rf nezha-linux-${os_arch}.zip
     
     modify_dashboard_config 0
     
