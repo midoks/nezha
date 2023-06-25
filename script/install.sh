@@ -208,8 +208,8 @@ install_dashboard() {
         return 0
     fi
 
-    mv nezha-linux-${os_arch}.zip $NZ_AGENT_PATH
-    cd $NZ_AGENT_PATH && unzip -qo nezha-linux-${os_arch}.zip
+    mv nezha-linux-${os_arch}.zip $NZ_DASHBOARD_PATH
+    cd $NZ_DASHBOARD_PATH && unzip -qo nezha-linux-${os_arch}.zip
     rm -rf nezha-linux-${os_arch}.zip
     
     modify_dashboard_config 0
