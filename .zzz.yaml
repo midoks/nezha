@@ -28,5 +28,5 @@ action:
   - ps -ef|grep 'nezha'| grep -v grep | grep -v git | awk '{print $2}' | xargs kill -9
   - rm -rf nezha
   - echo "stop web"
-  # git tag v0.15.x
+  # git tag v0.15.1
   # git push --tags
