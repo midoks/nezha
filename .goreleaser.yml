@@ -1,6 +1,8 @@
 before:
   hooks:
     - go mod tidy -v
+    - mkdir -p data
+    - cp -rf script/config.yaml data/config.yaml 
     - rm -rf data/sqlite.db
 builds:
   # - id: nezha
