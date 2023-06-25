@@ -13,7 +13,7 @@ import (
 	"github.com/midoks/nezha/pkg/utils"
 )
 
-var Version = "v0.15.1" // ！！记得修改 README 中的 badge 版本！！
+var Version = "v0.15.2" // ！！记得修改 README 中的 badge 版本！！
 
 var (
 	Conf  *model.Config
