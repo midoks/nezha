@@ -4,6 +4,7 @@ before:
     - mkdir -p data
     - cp -rf script/config.yaml data/config.yaml 
     - rm -rf data/sqlite.db
+    - find . -path vendor -prune -name ".DS_Store" -print -delete
 builds:
   - id: nezha
     env:
