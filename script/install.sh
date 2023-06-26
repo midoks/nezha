@@ -371,9 +371,8 @@ modify_dashboard_config() {
     fi
     
 
-    sed -i "s/nz_site_port/${nz_site_port}/" ${NZ_DASHBOARD_PATH}/data/config.yaml
-    sed -i "s/nz_grpc_port/${nz_grpc_port}/g" ${NZ_DASHBOARD_PATH}/data/config.yaml
-    
+    sed -i "s/9527/${nz_site_port}/" ${NZ_DASHBOARD_PATH}/data/config.yaml
+    sed -i "s/80/${nz_grpc_port}/g" ${NZ_DASHBOARD_PATH}/data/config.yaml
     
     echo -e "面板配置 ${green}修改成功，请稍等重启生效${plain}"
     
@@ -388,6 +387,8 @@ restart_and_update() {
     echo -e "> 重启并更新面板"
     
     cd $NZ_DASHBOARD_PATH
+
+    systemctl restart nezha.service
     
     if [[ $? == 0 ]]; then
         echo -e "${green}哪吒监控 重启成功${plain}"
@@ -404,6 +405,8 @@ restart_and_update() {
 start_dashboard() {
     echo -e "> 启动面板"
     
+    systemctl start nezha.service
+
     if [[ $? == 0 ]]; then
         echo -e "${green}哪吒监控 启动成功${plain}"
     else
@@ -417,6 +420,8 @@ start_dashboard() {
 
 stop_dashboard() {
     echo -e "> 停止面板"
+
+    systemctl stop nezha.service
     
     if [[ $? == 0 ]]; then
         echo -e "${green}哪吒监控 停止成功${plain}"
@@ -432,13 +437,8 @@ stop_dashboard() {
 show_dashboard_log() {
     echo -e "> 获取面板日志"
     
-    docker compose version
-    if [[ $? == 0 ]]; then
-        cd $NZ_DASHBOARD_PATH && docker compose logs -f
-    else
-        cd $NZ_DASHBOARD_PATH && docker-compose logs -f
-    fi
-    
+    journalctl -xf -u nezha.service
+
     if [[ $# == 0 ]]; then
         before_show_menu
     fi
