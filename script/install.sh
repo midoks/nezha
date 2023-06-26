@@ -9,6 +9,7 @@
 
 NZ_BASE_PATH="/opt/nezha"
 NZ_DASHBOARD_PATH="${NZ_BASE_PATH}/dashboard"
+NZ_DASHBOARD_SERVICE="/etc/systemd/system/nezha.service"
 NZ_AGENT_PATH="${NZ_BASE_PATH}/agent"
 NZ_AGENT_SERVICE="/etc/systemd/system/nezha-agent.service"
 NZ_VERSION="v0.15.2"
@@ -66,13 +67,13 @@ pre_check() {
     fi
     
     if [[ -z "${CN}" ]]; then
-        GITHUB_RAW_URL="raw.githubusercontent.com/naiba/nezha/master"
+        GITHUB_RAW_URL="raw.githubusercontent.com/midoks/nezha/main"
         GITHUB_URL="github.com"
         Get_Docker_URL="get.docker.com"
         Get_Docker_Argu=" "
         Docker_IMG="ghcr.io\/naiba\/nezha-dashboard"
     else
-        GITHUB_RAW_URL="cdn.jsdelivr.net/gh/naiba/nezha@master"
+        GITHUB_RAW_URL="cdn.jsdelivr.net/gh/nezha/nezha@main"
         GITHUB_URL="dn-dao-github-mirror.daocloud.io"
         Get_Docker_URL="get.daocloud.io/docker"
         Get_Docker_Argu=" -s docker --mirror Aliyun"
@@ -211,6 +212,15 @@ install_dashboard() {
     mv nezha-linux-${os_arch}.zip $NZ_DASHBOARD_PATH
     cd $NZ_DASHBOARD_PATH && unzip -qo nezha-linux-${os_arch}.zip
     rm -rf nezha-linux-${os_arch}.zip
+
+
+    if [ "$os_alpine" != 1 ];then
+        wget -t 2 -T 10 -O $NZ_DASHBOARD_SERVICE https://${GITHUB_RAW_URL}/script/nezha.service >/dev/null 2>&1
+        if [[ $? != 0 ]]; then
+            echo -e "${red}文件下载失败，请检查本机能否连接 ${GITHUB_RAW_URL}${plain}"
+            return 0
+        fi
+    fi
     
     modify_dashboard_config 0
     
@@ -344,28 +354,10 @@ modify_agent_config() {
 modify_dashboard_config() {
     echo -e "> 修改面板配置"
     
-    echo -e "正在下载 Docker 脚本"
-    wget -t 2 -T 10 -O /tmp/nezha-docker-compose.yaml https://${GITHUB_RAW_URL}/script/docker-compose.yaml >/dev/null 2>&1
-    if [[ $? != 0 ]]; then
-        echo -e "${red}下载脚本失败，请检查本机能否连接 ${GITHUB_RAW_URL}${plain}"
-        return 0
-    fi
     
-    wget -t 2 -T 10 -O /tmp/nezha-config.yaml https://${GITHUB_RAW_URL}/script/config.yaml >/dev/null 2>&1
-    if [[ $? != 0 ]]; then
-        echo -e "${red}下载脚本失败，请检查本机能否连接 ${GITHUB_RAW_URL}${plain}"
-        return 0
-    fi
-    
-    read -ep "请输入站点标题: " nz_site_title &&
     read -ep "请输入站点访问端口: (默认 8008)" nz_site_port &&
     read -ep "请输入用于 Agent 接入的 RPC 端口: (默认 5555)" nz_grpc_port
     
-    if [[ -z "${nz_admin_logins}" || -z "${nz_github_oauth_client_id}" || -z "${nz_github_oauth_client_secret}" || -z "${nz_site_title}" ]]; then
-        echo -e "${red}所有选项都不能为空${plain}"
-        before_show_menu
-        return 1
-    fi
     
     if [[ -z "${nz_site_port}" ]]; then
         nz_site_port=8008
@@ -373,18 +365,11 @@ modify_dashboard_config() {
     if [[ -z "${nz_grpc_port}" ]]; then
         nz_grpc_port=5555
     fi
-    if [[ -z "${nz_oauth2_type}" ]]; then
-        nz_oauth2_type=github
-    fi
     
-    sed -i "s/nz_site_title/${nz_site_title}/" /tmp/nezha-config.yaml
-    sed -i "s/nz_site_port/${nz_site_port}/" /tmp/nezha-docker-compose.yaml
-    sed -i "s/nz_grpc_port/${nz_grpc_port}/g" /tmp/nezha-docker-compose.yaml
-    sed -i "s/nz_image_url/${Docker_IMG}/" /tmp/nezha-docker-compose.yaml
+
+    sed -i "s/nz_site_port/${nz_site_port}/" ${NZ_DASHBOARD_PATH}/data/config.yaml
+    sed -i "s/nz_grpc_port/${nz_grpc_port}/g" ${NZ_DASHBOARD_PATH}/data/config.yaml
     
-    mkdir -p $NZ_DASHBOARD_PATH/data
-    mv -f /tmp/nezha-config.yaml ${NZ_DASHBOARD_PATH}/data/config.yaml
-    mv -f /tmp/nezha-docker-compose.yaml ${NZ_DASHBOARD_PATH}/docker-compose.yaml
     
     echo -e "面板配置 ${green}修改成功，请稍等重启生效${plain}"
     
@@ -400,17 +385,6 @@ restart_and_update() {
     
     cd $NZ_DASHBOARD_PATH
     
-    docker compose version
-    if [[ $? == 0 ]]; then
-        docker compose pull
-        docker compose down
-        docker compose up -d
-    else
-        docker-compose pull
-        docker-compose down
-        docker-compose up -d
-    fi
-    
     if [[ $? == 0 ]]; then
         echo -e "${green}哪吒监控 重启成功${plain}"
         echo -e "默认管理面板地址：${yellow}域名:站点访问端口${plain}"
@@ -425,13 +399,6 @@ restart_and_update() {
 
 start_dashboard() {
     echo -e "> 启动面板"
-    
-    docker compose version
-    if [[ $? == 0 ]]; then
-        cd $NZ_DASHBOARD_PATH && docker compose up -d
-    else
-        cd $NZ_DASHBOARD_PATH && docker-compose up -d
-    fi
     
     if [[ $? == 0 ]]; then
         echo -e "${green}哪吒监控 启动成功${plain}"
@@ -476,17 +443,7 @@ show_dashboard_log() {
 uninstall_dashboard() {
     echo -e "> 卸载管理面板"
     
-    docker compose version
-    if [[ $? == 0 ]]; then
-        cd $NZ_DASHBOARD_PATH && docker compose down
-    else
-        cd $NZ_DASHBOARD_PATH && docker-compose down
-    fi
-    
     rm -rf $NZ_DASHBOARD_PATH
-    docker rmi -f ghcr.io/naiba/nezha-dashboard > /dev/null 2>&1
-    docker rmi -f registry.cn-shanghai.aliyuncs.com/naibahq/nezha-dashboard > /dev/null 2>&1
-    clean_all
     
     if [[ $# == 0 ]]; then
         before_show_menu
