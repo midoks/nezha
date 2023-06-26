@@ -1,7 +1,7 @@
 debug: false
-httpport: 80
+httpport: 9527
 language: zh-CN
-grpcport: 9527
+grpcport: 5555
 site:
   brand: "哪吒"
   cookiename: "nezha-dashboard" #浏览器 Cookie 字段名，可不改
