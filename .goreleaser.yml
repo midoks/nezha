@@ -8,6 +8,7 @@ builds:
   - id: nezha
     env:
       - CGO_ENABLED=1
+      - CGO_LDFLAGS="-static"
       - CC=x86_64-linux-musl-gcc
     ldflags:
       - -s -w -X main.version={{.Version}} -X main.arch={{.Arch}}
@@ -21,6 +22,7 @@ builds:
   - id: nezha-386
     env:
       - CGO_ENABLED=1
+      - CGO_LDFLAGS="-static"
       - CC=i486-linux-musl-gcc
     ldflags:
       - -s -w -X main.version={{.Version}} -X main.arch={{.Arch}}
@@ -34,6 +36,7 @@ builds:
   - id: nezha-arm64
     env:
       - CGO_ENABLED=1
+      - CGO_LDFLAGS="-static"
       - CC=aarch64-linux-musl-gcc
     ldflags:
       - -s -w -X main.version={{.Version}} -X main.arch={{.Arch}}
@@ -47,6 +50,7 @@ builds:
   - id: nezha-arm
     env:
       - CGO_ENABLED=1
+      - CGO_LDFLAGS="-static"
       - CC=arm-linux-musleabi-gcc
     ldflags:
       - -s -w -X main.version={{.Version}} -X main.arch={{.Arch}}
