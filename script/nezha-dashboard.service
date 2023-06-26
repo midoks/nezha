@@ -15,7 +15,7 @@ Type=simple
 #User=root
 #Group=root
 WorkingDirectory=/opt/nezha/dashboard/
-ExecStart=/opt/nezha/dashboard/nezha
+ExecStart=/opt/nezha/dashboard/nezha web
 Restart=always
 #Environment=DEBUG=true
 
