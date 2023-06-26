@@ -69,15 +69,10 @@ pre_check() {
     if [[ -z "${CN}" ]]; then
         GITHUB_RAW_URL="raw.githubusercontent.com/midoks/nezha/main"
         GITHUB_URL="github.com"
-        Get_Docker_URL="get.docker.com"
-        Get_Docker_Argu=" "
         Docker_IMG="ghcr.io\/naiba\/nezha-dashboard"
     else
-        GITHUB_RAW_URL="cdn.jsdelivr.net/gh/nezha/nezha@main"
+        GITHUB_RAW_URL="cdn.jsdelivr.net/gh/midoks/nezha@main"
         GITHUB_URL="dn-dao-github-mirror.daocloud.io"
-        Get_Docker_URL="get.daocloud.io/docker"
-        Get_Docker_Argu=" -s docker --mirror Aliyun"
-        Docker_IMG="registry.cn-shanghai.aliyuncs.com\/naibahq\/nezha-dashboard"
     fi
 }
 
@@ -202,7 +197,7 @@ install_dashboard() {
     chmod 777 -R $NZ_DASHBOARD_PATH
     
     echo -e "正在安装面板"
-    echo "wget -t 2 -T 10 -O nezha-linux-${os_arch}.zip https://${GITHUB_URL}/midoks/nezha/releases/download/${version}/nezha-linux-${os_arch}.zip"
+    #echo "wget -t 2 -T 10 -O nezha-linux-${os_arch}.zip https://${GITHUB_URL}/midoks/nezha/releases/download/${version}/nezha-linux-${os_arch}.zip"
     wget -t 2 -T 10 -O nezha-linux-${os_arch}.zip https://${GITHUB_URL}/midoks/nezha/releases/download/${version}/nezha-linux-${os_arch}.zip >/dev/null 2>&1
     if [[ $? != 0 ]]; then
         echo -e "${red}Release 下载失败，请检查本机能否连接 ${GITHUB_URL}${plain}"
