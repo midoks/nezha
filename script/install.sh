@@ -214,15 +214,19 @@ install_dashboard() {
     rm -rf nezha-linux-${os_arch}.zip
 
 
+    modify_dashboard_config 0
+
     if [ "$os_alpine" != 1 ];then
         wget -t 2 -T 10 -O $NZ_DASHBOARD_SERVICE https://${GITHUB_RAW_URL}/script/nezha.service >/dev/null 2>&1
         if [[ $? != 0 ]]; then
             echo -e "${red}文件下载失败，请检查本机能否连接 ${GITHUB_RAW_URL}${plain}"
             return 0
         fi
+
+        systemctl daemon-reload
+        systemctl enable nezha-agent
+        systemctl restart nezha-agent
     fi
-    
-    modify_dashboard_config 0
     
     if [[ $# == 0 ]]; then
         before_show_menu
