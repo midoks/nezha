@@ -212,7 +212,7 @@ install_dashboard() {
     modify_dashboard_config 0
 
     if [ "$os_alpine" != 1 ];then
-        wget -t 2 -T 10 -O $NZ_DASHBOARD_SERVICE https://${GITHUB_RAW_URL}/script/nezha.service >/dev/null 2>&1
+        wget -t 2 -T 10 -O $NZ_DASHBOARD_SERVICE https://${GITHUB_RAW_URL}/script/nezha-dashboard.service >/dev/null 2>&1
         if [[ $? != 0 ]]; then
             echo -e "${red}文件下载失败，请检查本机能否连接 ${GITHUB_RAW_URL}${plain}"
             return 0
