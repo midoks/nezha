@@ -447,6 +447,13 @@ show_dashboard_log() {
 uninstall_dashboard() {
     echo -e "> 卸载管理面板"
     
+    if [ "$os_alpine" != 1 ];then
+        systemctl disable nezha.service
+        systemctl stop nezha.service
+        rm -rf $NZ_AGENT_SERVICE
+        systemctl daemon-reload
+    fi
+
     rm -rf $NZ_DASHBOARD_PATH
     
     if [[ $# == 0 ]]; then
