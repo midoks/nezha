@@ -101,7 +101,7 @@ build_app(){
 	fi
 
 	# zip
-	cd $rootPath/tmp/build && zip -r -q -o ${PACK_NAME}_$1_$2.zip  ./ && mv ${PACK_NAME}_$1_$2.zip $rootPath/tmp/package
+	cd $rootPath/tmp/build && zip -r -q -o ${PACK_NAME}-$1-$2.zip  ./ && mv ${PACK_NAME}-$1-$2.zip $rootPath/tmp/package
 }
 
 golist=`go tool dist list`
