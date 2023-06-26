@@ -219,8 +219,8 @@ install_dashboard() {
         fi
 
         systemctl daemon-reload
-        systemctl enable nezha-agent
-        systemctl restart nezha-agent
+        systemctl enable nezha
+        systemctl restart nezha
     fi
     
     if [[ $# == 0 ]]; then
