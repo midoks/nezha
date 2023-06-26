@@ -220,6 +220,7 @@ install_dashboard() {
 
         systemctl daemon-reload
         systemctl enable nezha
+        systemctl unmask nezha
         systemctl restart nezha
     fi
     
