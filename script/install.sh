@@ -366,8 +366,8 @@ modify_dashboard_config() {
     fi
     
 
-    sed -i "s/9527/${nz_site_port}/" ${NZ_DASHBOARD_PATH}/data/config.yaml
-    sed -i "s/80/${nz_grpc_port}/g" ${NZ_DASHBOARD_PATH}/data/config.yaml
+    sed -i "s/80/${nz_site_port}/" ${NZ_DASHBOARD_PATH}/data/config.yaml
+    sed -i "s/9527/${nz_grpc_port}/g" ${NZ_DASHBOARD_PATH}/data/config.yaml
     
     echo -e "面板配置 ${green}修改成功，请稍等重启生效${plain}"
     
