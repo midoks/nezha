@@ -65,7 +65,8 @@ builds:
   # dev env
   - id: darwin-amd64
     env:
-      - CGO_ENABLED=0
+      - CGO_ENABLED=1
+      - CC=x86_64-linux-musl-gcc
       - CGO_LDFLAGS="-static"
     ldflags:
       - -s -w -X main.version={{.Version}} -X main.arch={{.Arch}}
