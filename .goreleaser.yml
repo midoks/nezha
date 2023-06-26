@@ -61,18 +61,19 @@ builds:
     main: .
     binary: nezha
 
-  ## dev env
-  # - id: darwin-amd64
-  #   env:
-  #     - CGO_ENABLED=1
-  #   ldflags:
-  #     - -s -w -X main.version={{.Version}} -X main.arch={{.Arch}}
-  #   goos:
-  #     - darwin
-  #   goarch:
-  #     - amd64
-  #   main: .
-  #   binary: nezha
+  # dev env
+  - id: darwin-amd64
+    env:
+      - CGO_ENABLED=0
+      - CGO_LDFLAGS="-static"
+    ldflags:
+      - -s -w -X main.version={{.Version}} -X main.arch={{.Arch}}
+    goos:
+      - darwin
+    goarch:
+      - amd64
+    main: .
+    binary: nezha
 universal_binaries:
   - name_template: "nezha"
     replace: false
